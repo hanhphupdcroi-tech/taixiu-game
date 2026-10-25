@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tài Xỉu 3D - HitClub Style</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background: #09020e url('https://i.imgur.com/vHq4wXy.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            overflow: hidden;
+        }
+        /* Header thông tin */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, #321105, #140501);
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 8px 12px;
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.3), 0 4px 10px rgba(0,0,0,0.8);
+        }
+        .user-box { display: flex; align-items: center; gap: 8px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ffd700; background: #555; }
+        .username { font-size: 13px; font-weight: bold; color: #ffcc00; text-shadow: 1px 1px 2px #000; }
+        .coin-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #e5c158;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #55ff55;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
+        }
+
+        /* Bàn chơi chính */
+        .game-table {
+            position: relative;
+            background: radial-gradient(circle, #5b1313 0%, #2a0505 70%, #150202 100%);
+            border: 4px solid;
+            border-image: linear-gradient(to bottom, #ffd700, #8b6508) 1;
+            border-radius: 24px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 30px rgba(0,0,0,0.8);
+            margin: auto 0;
+        }
+
+        /* Hũ / Thừa số phiên */
+        .session-info {
+            font-size: 11px;
+            color: #ccc;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* Hộp lắc Xúc xắc */
+        .bowl-area {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 10px auto;
+            background: radial-gradient(circle, #7a1818, #360606);
+            border: 3px solid #ffcc00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 5px 15px rgba(0,0,0,0.7);
+        }
+        .dice-row {
+            display: flex;
+            gap: 8px;
+        }
+        .dice {
+            width: 32px; height: 32px;
+            background: #fff;
+            color: #000;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            border: 1px solid #aaa;
+        }
+
+        /* Đồng hồ đếm ngược */
+        .timer-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #ff4500, #b22222);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 2px 14px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+        }
+
+        /* Khu vực cược Tài / Xỉu */
+        .bet-grid {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .bet-card {
+            flex: 1;
+            padding: 15px 10px;
+            border-radius: 16px;
+            border: 3px solid #d4af37;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+            transition: transform 0.1s, filter 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+        .bet-card:active { transform: scale(0.96); filter: brightness(1.2); }
+        
+        .card-xiu {
+            background: linear-gradient(135deg, #103854 0%, #061c2e 100%);
+        }
+        .card-tai {
+            background: linear-gradient(135deg, #5c1414 0%, #300606 100%);
+        }
+        .bet-title {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            margin-bottom: 5px;
+        }
+        .card-xiu .bet-title { color: #00bfff; }
+        .card-tai .bet-title { color: #ff3333; }
+        .bet-pool { font-size: 11px; color: #ffeb3b; }
+
+        /* Chọn Chip tiền cược */
+        .chip-panel {
+            background: rgba(15, 5, 20, 0.9);
+            border: 2px solid #b8860b;
+            border-radius: 16px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+        }
+        .chip-btn {
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fffbe6 30%, #e6c650 100%);
+            border: 3px dashed #8b6508;
+            color: #4a2e00;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .chip-btn.active {
+            transform: scale(1.15);
+            border: 3px solid #ff4500;
+            box-shadow: 0 0 12px #ff4500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="top-bar">
+        <div class="user-box">
+            <div class="avatar"></div>
+            <span class="username">Bảo Hồng VIP</span>
+        </div>
+        <div class="coin-box">
+            🪙 <span id="balance">10,000,000</span>
+        </div>
+    </div>
+
+    <!-- Bàn chơi chính -->
+    <div class="game-table">
+        <div class="timer-badge" id="timer">48s</div>
+        <div class="session-info">Phiên #889234</div>
+
+        <!-- Hộp lắc -->
+        <div class="bowl-area">
+            <div class="dice-row">
+                <div class="dice" id="d1">4</div>
+                <div class="dice" id="d2">5</div>
+                <div class="dice" id="d3">6</div>
+            </div>
+        </div>
+        <div style="font-size: 13px; font-weight: bold; color: #ffcc00;" id="game-status">TÀI (15 điểm)</div>
+
+        <!-- Cửa cược -->
+        <div class="bet-grid">
+            <div class="bet-card card-xiu" onclick="placeBet('XỈU')">
+                <div class="bet-title">XỈU</div>
+                <div class="bet-pool">142,500 🪙</div>
+            </div>
+            <div class="bet-card card-tai" onclick="placeBet('TÀI')">
+                <div class="bet-title">TÀI</div>
+                <div class="bet-pool">389,100 🪙</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thanh chọn phỉnh cược -->
+    <div class="chip-panel">
+        <div class="chip-btn active" onclick="selectChip(1000, this)">1K</div>
+        <div class="chip-btn" onclick="selectChip(10000, this)">10K</div>
+        <div class="chip-btn" onclick="selectChip(50000, this)">50K</div>
+        <div class="chip-btn" onclick="selectChip(100000, this)">100K</div>
+        <div class="chip-btn" onclick="selectChip(500000, this)">500K</div>
+    </div>
+
+    <script>
+        let myBalance = 10000000;
+        let selectedChip = 1000;
+
+        function selectChip(amount, element) {
+            selectedChip = amount;
+            document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function placeBet(type) {
+            if (myBalance < selectedChip) {
+                alert("Số dư không đủ để đặt cược mức này!");
+                return;
+            }
+            myBalance -= selectedChip;
+            document.getElementById('balance').innerText = myBalance.toLocaleString();
+            alert("Đã cược thành công " + selectedChip.toLocaleString() + " xu vào cửa " + type);
+        }
+    </script>
+</body>
+  </html>
+  
